@@ -67,7 +67,7 @@ end
 
 @client.on :stasis_start do |e|
   puts "Received call to #{e.channel.dialplan.exten} !"
-  
+
   e.channel.answer
 
   e.channel.on :channel_dtmf_received do |e|
@@ -82,6 +82,26 @@ end
 # start websocket to receive events
 @client.connect_websocket
 sleep
+```
+
+## Docker
+
+It is possible to test and update image with docker, to build image do:
+
+```bash
+docker build --pull --force-rm -t asterisk-ari --file ./Dockerfile .
+```
+
+To start:
+
+```
+docker run -ti --rm -v ${PWD}:/app asterisk-ari bash
+```
+
+Try to execute rake there:
+
+```bash
+rake -T
 ```
 
 ## Contributing
