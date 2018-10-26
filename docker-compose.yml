@@ -1,0 +1,35 @@
+version: '3.7'
+
+services:
+  ari:
+    build: .
+    links:
+      - asterisk:asterisk
+    env_file: .env
+    volumes:
+      - ./ari:/app
+
+  asterisk:
+    build:
+      context: ./docker/asterisk
+      dockerfile: Dockerfile
+    env_file: .env
+    ports:
+      # ARI and HTTP
+      - 0.0.0.0:18088:8088/tcp
+      # AMI
+      # - 127.0.0.1:55038/tcp:55038/tcp
+      # SIP
+      - 0.0.0.0:5060:5060/tcp
+      - 0.0.0.0:5060:5060/udp
+      # RTP
+      - 0.0.0.0:20010-20019:20010/tcp
+      - 0.0.0.0:20010-20019:20010/udp
+    volumes:
+      - ./docker/asterisk/http.conf:/etc/asterisk/http.conf
+      - ./docker/asterisk/ari.conf:/etc/asterisk/ari.conf
+      - ./docker/asterisk/manager.conf:/etc/asterisk/manager.conf
+      - ./docker/asterisk/rtp.conf:/etc/asterisk/rtp.conf
+      - ./docker/asterisk/sip.conf:/etc/asterisk/sip.conf
+      - ./docker/asterisk/sip-hosts.conf:/etc/asterisk/sip-hosts.conf
+      - ./docker/asterisk/extensions.conf:/etc/asterisk/extensions.conf
