@@ -10,9 +10,9 @@
 #------------------------------------------------------------------------------
 
 module Ari
-  class Message < Model
+  class LogChannel < Model
 
-    attr_reader :type, :asterisk_id
+    attr_reader :channel, :type, :status, :configuration
 
 
   end

@@ -6,13 +6,15 @@ LABEL maintainer="Andrius Kairiukstis <k@andrius.mobi>"
 RUN apk add --update \
       bash \
       git \
-      tzdata \
       libstdc++ \
       libxml2 \
       libxslt \
       libffi \
       pcre \
+      tzdata \
+      vim \
       zlib \
+      \
       build-base \
       libxml2-dev \
       libxslt-dev \
@@ -22,13 +24,16 @@ RUN apk add --update \
       ruby-irb \
       ruby-rdoc \
       ruby-io-console \
-&& cp -R /usr/share/zoneinfo/Europe/Madrid /etc/localtime \
+\
+&& cp -R /usr/share/zoneinfo/Europe/Amsterdam /etc/localtime \
 && echo 'Europe/Amsterdam' > /etc/timezone \
 && rm -rf /var/cache/apk/*
 
-WORKDIR /app
+SHELL ["bash", "-c"]
 
-ADD docker-entrypoint.sh /docker-entrypoint.sh
+ENV WORKDIR /app
+WORKDIR ${WORKDIR}/
 
+COPY docker-entrypoint.sh /docker-entrypoint.sh
 ENTRYPOINT ["/docker-entrypoint.sh"]
-#CMD ["bundle", "exec", "ruby", "./websocket.rb"]
+CMD ["bash"]

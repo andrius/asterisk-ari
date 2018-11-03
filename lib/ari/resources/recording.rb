@@ -68,6 +68,27 @@ module Ari
       self.class.delete_stored(options.merge(recordingId: self.id, client: @client))
     end
 
+    # GET /recordings/stored/%{recordingName}/file
+    #
+    # The actual file associated with the stored recording
+    #
+    #
+    # Parameters:
+    #
+    # recordingName (required) - The name of the recording
+    #
+    def self.get_stored_file(options = {})
+      raise ArgumentError.new("Parameter recordingName must be passed in options hash.") unless options[:recordingName]
+      path = '/recordings/stored/%{recordingName}/file' % options
+      response = client(options).get(path, options)
+      binary.new(response.merge(client: options[:client]))
+    end
+    class << self; alias_method :getStoredFile, :get_stored_file; end
+
+    def get_stored_file(options = {})
+      self.class.get_stored_file(options.merge(recordingId: self.id, client: @client))
+    end
+
     # POST /recordings/stored/%{recordingName}/copy
     #
     # Copy an individual recording

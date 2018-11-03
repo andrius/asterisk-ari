@@ -13,7 +13,10 @@ end
 desc "Generate resources from JSON specification"
 task :generate do
 
-  base_url = 'http://svn.asterisk.org/svn/asterisk/trunk/rest-api/api-docs/%{resource_name}.json'
+  base_url = ENV.fetch('ARI_URL', 'http://svn.asterisk.org/svn/asterisk/trunk/rest-api/api-docs')
+  base_url = "#{base_url}/%{resource_name}.json"
+  username = ENV['ARI_USERNAME']
+  password = ENV['ARI_PASSWORD']
   resources = %w{ applications asterisk bridges channels deviceStates endpoints
     events mailboxes playbacks recordings sounds
   }
@@ -41,7 +44,12 @@ task :generate do
   resources.each do |resource_name|
     url = base_url % { resource_name: resource_name }
     puts ">> generating #{resource_name} from #{url}"
-    json = JSON.parse open(url).read
+    data = if username && password
+             open(url, http_basic_authentication: [username, password])
+           else
+             open(url)
+           end
+    json = JSON.parse(data.read)
     generator = Ari::Generators::ResourceGenerator.new(
       resource_name,
       json,

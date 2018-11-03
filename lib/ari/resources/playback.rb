@@ -12,7 +12,7 @@
 module Ari
   class Playback < Resource
 
-    attr_reader :id, :media_uri, :target_uri, :language, :state
+    attr_reader :id, :media_uri, :next_media_uri, :target_uri, :language, :state
 
 
     # GET /playbacks/%{playbackId}

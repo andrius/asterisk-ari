@@ -32,7 +32,8 @@ module Ari
       method_klass = Net::HTTP.const_get http_method.to_s.capitalize
       define_method http_method do |path, params = {}|
         request_body = params.delete(:body)
-        params.merge!({ api_key: @options[:api_key], app: @options[:app] })
+        params.merge!({ api_key: @options[:api_key] })
+        # params.merge!({ app: @options[:app] })
         query_string = URI.encode_www_form params
         request_path = "#{@uri.path}#{path}?#{query_string}"
         request = method_klass.new request_path, HTTP_HEADERS

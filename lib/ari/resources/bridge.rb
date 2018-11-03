@@ -12,7 +12,7 @@
 module Ari
   class Bridge < Resource
 
-    attr_reader :id, :technology, :bridge_type, :bridge_class, :creator, :name, :channels
+    attr_reader :id, :technology, :bridge_type, :bridge_class, :creator, :name, :channels, :video_mode, :video_source_id
 
 
     # GET /bridges
@@ -33,7 +33,7 @@ module Ari
     #
     # Parameters:
     #
-    # type  - Comma separated list of bridge type attributes (mixing, holding, dtmf_events, proxy_media).
+    # type  - Comma separated list of bridge type attributes (mixing, holding, dtmf_events, proxy_media, video_sfu).
     # bridgeId  - Unique ID to give to the bridge being created.
     # name  - Name to give to the bridge being created.
     #
@@ -50,7 +50,7 @@ module Ari
     #
     # Parameters:
     #
-    # type  - Comma separated list of bridge type attributes (mixing, holding, dtmf_events, proxy_media) to set.
+    # type  - Comma separated list of bridge type attributes (mixing, holding, dtmf_events, proxy_media, video_sfu) to set.
     # bridgeId (required) - Unique ID to give to the bridge being created.
     # name  - Set the name of the bridge.
     #
@@ -152,6 +152,54 @@ module Ari
       self.class.remove_channel(options.merge(bridgeId: self.id, client: @client))
     end
 
+    # POST /bridges/%{bridgeId}/videoSource/%{channelId}
+    #
+    # Set a channel as the video source in a multi-party bridge
+    #
+    # Set a channel as the video source in a multi-party mixing bridge. This operation
+    #
+    # Parameters:
+    #
+    # bridgeId (required) - Bridge's id
+    # channelId (required) - Channel's id
+    #
+    def self.set_video_source(options = {})
+      raise ArgumentError.new("Parameter bridgeId must be passed in options hash.") unless options[:bridgeId]
+      raise ArgumentError.new("Parameter channelId must be passed in options hash.") unless options[:channelId]
+      path = '/bridges/%{bridgeId}/videoSource/%{channelId}' % options
+      response = client(options).post(path, options)
+    end
+    class << self; alias_method :setVideoSource, :set_video_source; end
+
+    def set_video_source(options = {})
+      self.class.set_video_source(options.merge(bridgeId: self.id, client: @client))
+    end
+
+    # DELETE /bridges/%{bridgeId}/videoSource
+    #
+    # Removes any explicit video source
+    #
+    # Removes any explicit video source in a multi-party mixing bridge. This operation
+    #  has no effect on bridges with two or fewer participants. When no explicit video
+    #  source is set, talk detection will be used to determine the active video stream
+    #
+    # Parameters:
+    #
+    # bridgeId (required) - Bridge's id
+    #
+    def self.clear_video_source(options = {})
+      raise ArgumentError.new("Parameter bridgeId must be passed in options hash.") unless options[:bridgeId]
+      path = '/bridges/%{bridgeId}/videoSource' % options
+      response = client(options).delete(path, options)
+    rescue Ari::RequestError => e
+      raise unless e.code == '404'
+    end
+    class << self; alias_method :clearVideoSource, :clear_video_source; end
+
+    def clear_video_source(options = {})
+      self.class.clear_video_source(options.merge(bridgeId: self.id, client: @client))
+    end
+
     # POST /bridges/%{bridgeId}/moh
     #
     # Play music on hold to a bridge
@@ -203,9 +251,9 @@ module Ari
     # Parameters:
     #
     # bridgeId (required) - Bridge's id
-    # media (required) - Media's URI to play.
+    # media (required) - Media URIs to play.
     # lang  - For sounds, selects language for sound.
-    # offsetms  - Number of media to skip before playing.
+    # offsetms  - Number of milliseconds to skip before playing. Only applies to the first URI if multiple media URIs are specified.
     # skipms  - Number of milliseconds to skip for forward/reverse operations.
     # playbackId  - Playback Id.
     #
@@ -230,9 +278,9 @@ module Ari
     #
     # bridgeId (required) - Bridge's id
     # playbackId (required) - Playback ID.
-    # media (required) - Media's URI to play.
+    # media (required) - Media URIs to play.
     # lang  - For sounds, selects language for sound.
-    # offsetms  - Number of media to skip before playing.
+    # offsetms  - Number of milliseconds to skip before playing. Only applies to the first URI if multiple media URIs are specified.
     # skipms  - Number of milliseconds to skip for forward/reverse operations.
     #
     def self.play_with_id(options = {})
