@@ -12,7 +12,11 @@
 module Ari
   class Bridge < Resource
 
-    attr_reader :id, :technology, :bridge_type, :bridge_class, :creator, :name, :channels, :video_mode, :video_source_id
+    attr_reader :id, :technology, :bridge_type, :bridge_class, :creator, :name, :channels, :video_mode, :video_source_id, :creationtime
+
+    def creationtime=(val)
+      @creationtime ||= Time.parse(val)
+    end
 
 
     # GET /bridges
@@ -117,6 +121,8 @@ module Ari
     # bridgeId (required) - Bridge's id
     # channel (required) - Ids of channels to add to bridge
     # role  - Channel's role in the bridge
+    # absorbDTMF  - Absorb DTMF coming from this channel, preventing it to pass through to the bridge
+    # mute  - Mute audio from this channel, preventing it to pass through to the bridge
     #
     def self.add_channel(options = {})
       raise ArgumentError.new("Parameter bridgeId must be passed in options hash.") unless options[:bridgeId]

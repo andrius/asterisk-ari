@@ -10,9 +10,9 @@
 #------------------------------------------------------------------------------
 
 module Ari
-  class DialplanCEP < Model
+  class AsteriskPing < Model
 
-    attr_reader :context, :exten, :priority, :app_name, :app_data
+    attr_reader :asterisk_id, :ping, :timestamp
 
 
   end

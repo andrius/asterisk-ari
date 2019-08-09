@@ -10,9 +10,13 @@
 #------------------------------------------------------------------------------
 
 module Ari
-  class DialplanCEP < Model
+  class ApplicationMoveFailed < Event
 
-    attr_reader :context, :exten, :priority, :app_name, :app_data
+    attr_reader :channel, :destination, :args
+
+    def channel=(val)
+      @channel ||= Channel.new(val)
+    end
 
 
   end

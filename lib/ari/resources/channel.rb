@@ -199,6 +199,28 @@ module Ari
       self.class.continue_in_dialplan(options.merge(channelId: self.id, client: @client))
     end
 
+    # POST /channels/%{channelId}/move
+    #
+    # Move the channel from one Stasis application to another.
+    #
+    #
+    # Parameters:
+    #
+    # channelId (required) - Channel's id
+    # app (required) - The channel will be passed to this Stasis application.
+    # appArgs  - The application arguments to pass to the Stasis application provided by 'app'.
+    #
+    def self.move(options = {})
+      raise ArgumentError.new("Parameter channelId must be passed in options hash.") unless options[:channelId]
+      raise ArgumentError.new("Parameter app must be passed in options hash.") unless options[:app]
+      path = '/channels/%{channelId}/move' % options
+      response = client(options).post(path, options)
+    end
+
+    def move(options = {})
+      self.class.move(options.merge(channelId: self.id, client: @client))
+    end
+
     # POST /channels/%{channelId}/redirect
     #
     # Inform the channel that it should redirect itself to a different location. Note that this will almost certainly cause the channel to exit the application.
@@ -675,6 +697,26 @@ module Ari
 
     def dial(options = {})
       self.class.dial(options.merge(channelId: self.id, client: @client))
+    end
+
+    # GET /channels/%{channelId}/rtp_statistics
+    #
+    # Get RTP statistics information for RTP on a channel
+    #
+    #
+    # Parameters:
+    #
+    # channelId (required) - Channel's id
+    #
+    def self.rtpstatistics(options = {})
+      raise ArgumentError.new("Parameter channelId must be passed in options hash.") unless options[:channelId]
+      path = '/channels/%{channelId}/rtp_statistics' % options
+      response = client(options).get(path, options)
+      RTPstat.new(response.merge(client: options[:client]))
+    end
+
+    def rtpstatistics(options = {})
+      self.class.rtpstatistics(options.merge(channelId: self.id, client: @client))
     end
 
 

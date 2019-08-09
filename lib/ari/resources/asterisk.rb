@@ -106,6 +106,17 @@ module Ari
     end
     class << self; alias_method :getInfo, :get_info; end
 
+    # GET /asterisk/ping
+    #
+    # Asterisk ping
+    #
+    #
+    def self.ping(options = {})
+      path = '/asterisk/ping'
+      response = client(options).get(path, options)
+      AsteriskPing.new(response.merge(client: options[:client]))
+    end
+
     # GET /asterisk/modules
     #
     # Asterisk modules
